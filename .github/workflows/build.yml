@@ -1,0 +1,105 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ngx-google-maps-places-api
+          path: dist/ngx-google-maps-places-api
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ngx-google-maps-places-autocomplete
+          path: dist/ngx-google-maps-places-autocomplete
+
+  build-app:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ngx-google-maps-places-api
+          path: dist/ngx-google-maps-places-api
+      - uses: actions/download-artifact@v4
+        with:
+          name: ngx-google-maps-places-autocomplete
+          path: dist/ngx-google-maps-places-autocomplete
+      - run: npm ci
+      - run: npm run build:app
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ngx-google-maps-places-api
+          path: dist/ngx-google-maps-places-api
+      - uses: actions/download-artifact@v4
+        with:
+          name: ngx-google-maps-places-autocomplete
+          path: dist/ngx-google-maps-places-autocomplete
+      - run: npm ci
+      - run: npm test
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage
+      #     path: coverage/ngx-google-maps-places/cobertura-coverage.xml
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage-app
+      #     path: coverage/ngx-google-maps-places-app/cobertura-coverage.xml
+      # - name: Upload to Codecov
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: ./coverage/ngx-google-maps-places/cobertura-coverage.xml,./coverage/ngx-google-maps-places-app/cobertura-coverage.xml
+      #     flags: unittests
+      #     name: codecov-umbrella
+      #     fail_ci_if_error: true
+      #   env:
+      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  lint:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ngx-google-maps-places-api
+          path: dist/ngx-google-maps-places-api
+      - uses: actions/download-artifact@v4
+        with:
+          name: ngx-google-maps-places-autocomplete
+          path: dist/ngx-google-maps-places-autocomplete
+      - run: npm ci
+      - run: npm run lint

@@ -1,0 +1,3 @@
+pattern: >-
+  ^(main|development|staging|production){1}$|^(bump|feat|fix|hotfix)/(LH-\d+)$|^(release)/(v([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?)$
+errorMsg: "🤨 The branch that you are trying to push doesn't match our conventions, rename it with `git branch -m <current-name> <new-name>`"

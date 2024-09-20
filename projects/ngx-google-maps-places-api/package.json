@@ -1,0 +1,43 @@
+{
+  "name": "ngx-google-maps-places-api",
+  "description": "Angular library that provides a seamless integration with new Google Maps Places API, offering easy-to-use services for place details retrieval and management in Angular applications.",
+  "version": "1.0.0",
+  "homepage": "https://lekhmanrus.github.io/ngx-google-maps-places/",
+  "bugs": {
+    "url": "https://github.com/lekhmanrus/ngx-google-maps-places/issues",
+    "email": "lekhman112@gmail.com"
+  },
+  "author": "Ruslan Lekhman <lekhman112@gmail.com> (https://github.com/lekhmanrus)",
+  "contributors": [
+    "Ruslan Lekhman <lekhman112@gmail.com> (https://github.com/lekhmanrus)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lekhmanrus/ngx-google-maps-places"
+  },
+  "license": "MIT",
+  "readme": "https://github.com/lekhmanrus/ngx-google-maps-places/blob/main/README.md",
+  "private": false,
+  "keywords": [
+    "angular",
+    "google maps",
+    "googlemaps",
+    "places api",
+    "material",
+    "autocomplete",
+    "geolocation",
+    "geocoding",
+    "address components",
+    "place details",
+    "maps integration",
+    "location services"
+  ],
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/common": "^18.0.0",
+    "@angular/core": "^18.0.0"
+  },
+  "sideEffects": false
+}

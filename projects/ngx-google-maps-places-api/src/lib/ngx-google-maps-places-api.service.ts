@@ -18,7 +18,7 @@ export class NgxGoogleMapsPlacesApiService {
       google.maps.importLibrary('places') as Promise<google.maps.PlacesLibrary>
     )
     .pipe(
-      tap(() => console.info('importLibrary')),
+      // tap(() => console.info('importLibrary')),
       shareReplay(1)
     );
   /**

@@ -106,7 +106,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/ngx-google-maps-places-app",
+            "outputPath": {
+              "base": "dist/ngx-google-maps-places-app",
+              "browser": ""
+            },
             "index": "projects/ngx-google-maps-places-app/src/index.html",
             "browser": "projects/ngx-google-maps-places-app/src/main.ts",
             "polyfills": [ ],

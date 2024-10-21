@@ -1,7 +1,7 @@
 {
   "name": "ngx-google-maps-places-autocomplete",
   "description": "Angular library that provides a powerful and customizable Google Maps Places Autocomplete component for your Angular applications.",
-  "version": "18.1.0",
+  "version": "18.1.1",
   "homepage": "https://lekhmanrus.github.io/ngx-google-maps-places/",
   "bugs": {
     "url": "https://github.com/lekhmanrus/ngx-google-maps-places/issues",

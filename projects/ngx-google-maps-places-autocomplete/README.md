@@ -129,8 +129,16 @@ Use the `ngxGoogleMapsPlacesAutocomplete` directive within an `matAutocomplete` 
          formControlName="address"
          [matAutocomplete]="addressAutocomplete"
          ngxGoogleMapsPlacesAutocomplete
-         [fetchFields]="[ 'addressComponents', 'location', 'googleMapsURI' ]"
          #placesAutocomplete="ngxGoogleMapsPlacesAutocomplete" />
+  <!--
+    In addition to ngxGoogleMapsPlacesAutocomplete above you can use the following inputs/outputs like:
+      [shouldLoadPlaceDetails]="true"
+      [fetchFields]="[ 'addressComponents', 'location', 'googleMapsURI' ]"
+      [placesAutocompleteRequest]="{ includedRegionCodes: [ 'UA' ] }"
+      [placesAutocompleteDebounceTime]="575"
+      (optionsLoad)="onSuggestionsLoaded($event)"
+      (placeDetailsLoad)="onPlaceDetailsLoaded($event)"
+  -->
   <mat-autocomplete autoActiveFirstOption #addressAutocomplete="matAutocomplete">
     @for (option of placesAutocomplete.options$(); track option.prediction.placeId) {
       <mat-option [value]="option">
@@ -184,6 +192,8 @@ Exported as: `ngxGoogleMapsPlacesAutocomplete`
 | **Input**           |                                                                          |
 | `shouldLoadPlaceDetails: boolean` | Determines whether place details should be loaded for the selected autocomplete suggestion. Default is `true`. |
 | `fetchFields: string[] \| undefined` | List of fields to be fetched at place details request. Default is `undefined`, which will result in passing `[ 'addressComponents' ]` to Google Places API. |
+| `placesAutocompleteRequest: Omit<google.maps.places.AutocompleteRequest, 'input'> \| undefined` | An input property that specifies the options for the Google Maps Places Autocomplete request. This property allows the user to customize the autocomplete request, such as setting the location bias, types of places to return, or other parameters. If this property is not set, the default autocomplete request options will be used. See [google.maps.places.AutocompleteRequest](https://developers.google.com/maps/documentation/javascript/reference/autocomplete-data#AutocompleteRequest) interface. |
+| `placesAutocompleteDebounceTime: number \| null` | An input property that specifies the debounce time (in milliseconds) for the input event that triggers the autocomplete suggestions. If this property is not set, the default debounce time of 725 milliseconds will be used. |
 | **Output**          |                                                                          |
 | `optionsLoad: OutputEmitterRef<NgxGoogleMapsPlacesAutocompleteSuggestion[]>` | An event that is emitted when the options for the autocomplete suggestions have been loaded. |
 | `placeDetailsLoad: OutputEmitterRef<NgxGoogleMapsPlacesAutocompletePlaceDetails \| null>` | An observable signal that holds the current list of autocomplete suggestions. The suggestions are of type `NgxGoogleMapsPlacesAutocompleteSuggestion[]`. |

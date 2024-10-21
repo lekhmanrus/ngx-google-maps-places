@@ -53,6 +53,16 @@
                formControlName="street"
                [value]="placesAutocomplete.placeDetails$()?.address?.street" />
       </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Address Line 2 (apartment, suite, a unit number)</mat-label>
+        <input type="text"
+               placeholder="Enter your address line 2 (apartment, suite, a unit number)"
+               aria-label="Address Line 2 (apartment, suite, a unit number)"
+               matInput
+               formControlName="addressLine2"
+               [value]="placesAutocomplete.placeDetails$()?.address?.addressLine2" />
+      </mat-form-field>
     </div>
 
     <div class="row">
@@ -74,6 +84,16 @@
                matInput
                formControlName="region"
                [value]="placesAutocomplete.placeDetails$()?.address?.region" />
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>State/Province Code</mat-label>
+        <input type="text"
+               placeholder="Enter your state/province code"
+               aria-label="State/Province Code"
+               matInput
+               formControlName="regionCode"
+               [value]="placesAutocomplete.placeDetails$()?.address?.regionCode" />
       </mat-form-field>
     </div>
 

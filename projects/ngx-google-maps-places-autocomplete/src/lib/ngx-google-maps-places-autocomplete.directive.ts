@@ -1,18 +1,8 @@
-import {
-  AfterViewInit,
-  Directive,
-  EnvironmentInjector,
-  inject,
-  input,
-  output,
-  runInInjectionContext,
-  signal
-} from '@angular/core';
+import { AfterViewInit, Directive, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NgControl } from '@angular/forms';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { NgxGoogleMapsPlacesApiService } from 'ngx-google-maps-places-api';
-import { debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, Subject, switchMap, tap } from 'rxjs';
 
 import {
   NgxGoogleMapsPlacesAutocompletePlaceDetails
@@ -33,24 +23,48 @@ import {
     textarea[matAutocomplete][ngxGoogleMapsPlacesAutocomplete]
   `,
   standalone: true,
+  host: {
+    '(input)': '_handleInput($event)',
+  },
   exportAs: 'ngxGoogleMapsPlacesAutocomplete'
 })
 export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
   /** Determines whether place details should be loaded for the selected autocomplete suggestion. */
-  public readonly shouldLoadPlaceDetails = input(true);
+  public readonly shouldLoadPlaceDetails$ = input(true, { alias: 'shouldLoadPlaceDetails' });
   /** List of fields to be fetched at place details request. */
-  public readonly fetchFields = input<string[] | undefined>(undefined);
+  public readonly fetchFields$ = input<string[] | undefined>(undefined, { alias: 'fetchFields' });
+  /**
+   * An input property that specifies the options for the Google Maps Places Autocomplete request.
+   * This property allows the user to customize the autocomplete request, such as setting the
+   * location bias, types of places to return, or other parameters.
+   * If this property is not set, the default autocomplete request options will be used.
+   * @see https://developers.google.com/maps/documentation/javascript/reference/autocomplete-data#AutocompleteRequest
+   */
+  public readonly placesAutocompleteRequest$
+    = input<Omit<google.maps.places.AutocompleteRequest, 'input'> | undefined>(undefined, {
+      alias: 'placesAutocompleteRequest'
+    });
+  /**
+   * An input property that specifies the debounce time (in milliseconds) for the input event
+   * that triggers the autocomplete suggestions. If this property is not set, the default
+   * debounce time of 725 milliseconds will be used.
+   */
+  public readonly placesAutocompleteDebounceTime$ = input<number | null>(725, {
+    alias: 'placesAutocompleteDebounceTime'
+  });
   /**
    * An event that is emitted when the options for the autocomplete suggestions have been loaded.
    */
-  public readonly optionsLoad = output<NgxGoogleMapsPlacesAutocompleteSuggestion[]>();
+  public readonly optionsLoad$
+    = output<NgxGoogleMapsPlacesAutocompleteSuggestion[]>({ alias: 'optionsLoad' });
   /**
    * An event that is emitted when the place details for the selected autocomplete suggestion have
    * been loaded.
    * The emitted value is the place details object, or `null` if the place details could
    * not be loaded.
    */
-  public readonly placeDetailsLoad = output<NgxGoogleMapsPlacesAutocompletePlaceDetails | null>();
+  public readonly placeDetailsLoad$
+    = output<NgxGoogleMapsPlacesAutocompletePlaceDetails | null>({ alias: 'placeDetailsLoad' });
   /**
    * An observable signal that holds the current list of autocomplete suggestions.
    * The suggestions are of type `NgxGoogleMapsPlacesAutocompleteSuggestion[]`.
@@ -69,92 +83,77 @@ export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
    */
   private readonly _ngxGoogleMapsPlacesApiService = inject(NgxGoogleMapsPlacesApiService);
   /**
-   * A private readonly reference to the NgControl instance that is injected into this directive.
-   * The NgControl instance provides access to the form control associated with the input element
-   * that this directive is applied to.
-   */
-  private readonly _control = inject(NgControl);
-  /**
    * The MatAutocompleteTrigger instance provides access to the autocomplete functionality
    * associated with the input element that this directive is applied to.
    */
   private readonly _matAutocompleteTrigger = inject(MatAutocompleteTrigger);
   /**
-   * The EnvironmentInjector instance provides access to the dependency injection environment for
+   * A private readonly Subject that emits keyboard events for the input element associated with
    * this directive.
    */
-  private readonly _injector = inject(EnvironmentInjector);
+  private readonly _input$ = new Subject<KeyboardEvent>();
+
+  constructor() {
+    this._input$
+      .pipe(
+        debounceTime(this.placesAutocompleteDebounceTime$() ?? 725),
+        distinctUntilChanged(),
+        tap((event) => this._matAutocompleteTrigger._handleInput(event)),
+        map((event) => event.target as HTMLInputElement),
+        filter(Boolean),
+        map((target) => target.value),
+        filter((value) => typeof value === 'string' && Boolean(value)),
+        // tap((value) => console.log('valueChanges', value)),
+        switchMap((value) => this._ngxGoogleMapsPlacesApiService.fetchSuggestions(
+          this.placesAutocompleteRequest$()
+          ? { ...this.placesAutocompleteRequest$(), input: value }
+          : value
+        )),
+        map((suggestions: google.maps.places.AutocompleteSuggestion[]) => suggestions
+          .filter((suggestion) => Boolean(suggestion?.placePrediction))
+          .map(({ placePrediction }) => ({
+            prediction: placePrediction!,
+            formattedMainHtml: this._ngxGoogleMapsPlacesApiService
+              .applyBoldToMatches(placePrediction!.mainText),
+            formattedSecondaryHtml: this._ngxGoogleMapsPlacesApiService
+              .applyBoldToMatches(placePrediction!.secondaryText),
+            formattedHtml: this._ngxGoogleMapsPlacesApiService
+              .applyBoldToMatches(placePrediction!.text)
+          } as NgxGoogleMapsPlacesAutocompleteSuggestion))),
+        // tap((predictions) => console.log('predictions', predictions)),
+        tap((predictions) => this.options$.set(predictions)),
+        tap((predictions) => this.optionsLoad$.emit(predictions)),
+        takeUntilDestroyed()
+      )
+      .subscribe();
+    this._matAutocompleteTrigger.optionSelections
+      .pipe(
+        filter(({ isUserInput }) => isUserInput && this.shouldLoadPlaceDetails$()),
+        // tap((value) => console.log('this._matAutocompleteTrigger.optionSelections', value)),
+        map((value) => value.source.value as NgxGoogleMapsPlacesAutocompleteSuggestion),
+        filter(Boolean),
+        switchMap((suggestion) => this._ngxGoogleMapsPlacesApiService
+          .fetchPlaceDetails(suggestion.prediction, this.fetchFields$())),
+        map((placeDetails) => ({
+          place: placeDetails,
+          address: this._ngxGoogleMapsPlacesApiService.parseAddressComponents(placeDetails)
+        } as NgxGoogleMapsPlacesAutocompletePlaceDetails)),
+        // tap((placeDetails) => console.log('placeDetails', placeDetails)),
+        tap((placeDetails) => this.placeDetails$.set(placeDetails)),
+        tap((predictions) => this.placeDetailsLoad$.emit(predictions)),
+        takeUntilDestroyed()
+      )
+      .subscribe();
+  }
 
   /**
-   * This method is called after the directive's view has been initialized. It sets up the
-   * autocomplete functionality for the input element that this directive is applied to.
-   * It subscribes to the `valueChanges` observable of the form control associated with the input
-   * element, and uses the `NgxGoogleMapsPlacesApiService` to fetch autocomplete suggestions based on
-   * the input value. The fetched suggestions are then emitted through the `optionsLoad` event
-   * and stored in the `options$` observable signal.
-   * If the `shouldLoadPlaceDetails` flag is set to `true`, the method also sets up a subscription
-   * to the `optionSelections` observable of the `MatAutocompleteTrigger` instance. When a user
-   * selects an autocomplete suggestion, the method uses the `NgxGoogleMapsPlacesApiService` to fetch
-   * the place details for the selected suggestion, and emits the place details through
-   * the `placeDetailsLoad` event and stores them in the `placeDetails$` observable signal.
-   * The method also sets the `displayWith` function of the `MatAutocompleteTrigger` instance to
-   * the `displayFn` method of this directive, which is used to format the display of the
-   * autocomplete suggestions.
+   * Sets the display function for the autocomplete suggestions.
+   * This function is called by the Material Autocomplete component to display the text of each
+   * suggestion.
    */
   public ngAfterViewInit(): void {
-    runInInjectionContext(this._injector, () => {
-      if (this._control.valueChanges) {
-        this._control.valueChanges
-          .pipe(
-            debounceTime(725),
-            distinctUntilChanged(),
-            filter((value) => typeof value === 'string'),
-            // tap((value) => console.log('valueChanges', value)),
-            switchMap((value) => this._ngxGoogleMapsPlacesApiService.fetchSuggestions(value)),
-            map((suggestions) => suggestions
-              .filter((suggestion) => Boolean(suggestion?.placePrediction))
-              .map(({ placePrediction }) => ({
-                prediction: placePrediction!,
-                formattedMainHtml: this._ngxGoogleMapsPlacesApiService
-                  .applyBoldToMatches(placePrediction!.mainText),
-                formattedSecondaryHtml: this._ngxGoogleMapsPlacesApiService
-                  .applyBoldToMatches(placePrediction!.secondaryText),
-                formattedHtml: this._ngxGoogleMapsPlacesApiService
-                  .applyBoldToMatches(placePrediction!.text)
-              } as NgxGoogleMapsPlacesAutocompleteSuggestion))),
-            // tap((predictions) => console.log('predictions', predictions)),
-            tap((predictions) => this.options$.set(predictions)),
-            tap((predictions) => this.optionsLoad.emit(predictions)),
-            takeUntilDestroyed()
-          )
-          .subscribe();
-      }
-    });
     if (!this._matAutocompleteTrigger.autocomplete.displayWith) {
       this._matAutocompleteTrigger.autocomplete.displayWith = this.displayFn;
-      // console.log('set autocomplete displayWith: ', this.displayFn);
-    }
-    if (this.shouldLoadPlaceDetails()) {
-      runInInjectionContext(this._injector, () => {
-        this._matAutocompleteTrigger.optionSelections
-          .pipe(
-            filter(({ isUserInput }) => isUserInput),
-            // tap((value) => console.log('this._matAutocompleteTrigger.optionSelections', value)),
-            map((value) => value.source.value as NgxGoogleMapsPlacesAutocompleteSuggestion),
-            filter(Boolean),
-            switchMap((suggestion) => this._ngxGoogleMapsPlacesApiService
-              .fetchPlaceDetails(suggestion.prediction, this.fetchFields())),
-            map((placeDetails) => ({
-              place: placeDetails,
-              address: this._ngxGoogleMapsPlacesApiService.parseAddressComponents(placeDetails)
-            } as NgxGoogleMapsPlacesAutocompletePlaceDetails)),
-            // tap((placeDetails) => console.log('placeDetails', placeDetails)),
-            tap((placeDetails) => this.placeDetails$.set(placeDetails)),
-            tap((predictions) => this.placeDetailsLoad.emit(predictions)),
-            takeUntilDestroyed()
-          )
-          .subscribe();
-      });
     }
   }
 
@@ -166,5 +165,13 @@ export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
    */
   public displayFn(suggestion: NgxGoogleMapsPlacesAutocompleteSuggestion): string {
     return suggestion?.prediction?.text?.text || '';
+  }
+
+  /**
+   * Handles the input event on the input element.
+   * @param event The keyboard event that triggered the input.
+   */
+  private _handleInput(event: KeyboardEvent): void {
+    this._input$.next(event);
   }
 }

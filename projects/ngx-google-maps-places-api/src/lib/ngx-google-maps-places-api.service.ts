@@ -36,6 +36,7 @@ export class NgxGoogleMapsPlacesApiService {
    */
   public refreshToken(): google.maps.places.AutocompleteSessionToken {
     this._token = new google.maps.places.AutocompleteSessionToken();
+    // console.log('refreshToken()', this._token);
     return this._token;
   }
 
@@ -80,11 +81,12 @@ export class NgxGoogleMapsPlacesApiService {
   ): Observable<google.maps.places.Place | null> {
     const placePrediction = this._isAutocompleteSuggestion(suggestionOrPrediction)
       ? suggestionOrPrediction.placePrediction
-      : suggestionOrPrediction
-    if (!placePrediction) {
+      : suggestionOrPrediction;
+    const place = placePrediction?.toPlace();
+    if (!place) {
       return of(null);
     }
-    return from(placePrediction.toPlace().fetchFields({ fields }))
+    return from(place.fetchFields({ fields }))
       .pipe(
         tap(() => this.refreshToken()),
         map(({ place }) => place),
@@ -117,6 +119,13 @@ export class NgxGoogleMapsPlacesApiService {
         'administrative_area_level_4',
         'administrative_area_level_5'
       ],
+      regionCode: [
+        'administrative_area_level_1',
+        'administrative_area_level_2',
+        'administrative_area_level_3',
+        'administrative_area_level_4',
+        'administrative_area_level_5'
+      ],
       city: [
         'locality',
         'sublocality',
@@ -126,7 +135,8 @@ export class NgxGoogleMapsPlacesApiService {
         'sublocality_level_4'
       ],
       countryCode: [ 'country' ],
-      country: [ 'country' ]
+      country: [ 'country' ],
+      addressLine2: [ 'subpremise' ]
     };
 
     const addressModel: AddressModel = {
@@ -134,9 +144,11 @@ export class NgxGoogleMapsPlacesApiService {
       postalCode: '',
       street: '',
       region: '',
+      regionCode: '',
       city: '',
       countryCode: '',
-      country: ''
+      country: '',
+      addressLine2: ''
     };
 
     for (const addressComponent of addressComponents) {
@@ -144,7 +156,7 @@ export class NgxGoogleMapsPlacesApiService {
         const key = mapKey as AddressKey;
         const addressComponentMap = addressComponentsMap[key];
         if (addressComponentMap.some((type) => addressComponent.types.includes(type))) {
-          if (key === 'countryCode') {
+          if (key === 'countryCode' || key === 'regionCode') {
             addressModel[key] = String(addressComponent.shortText);
           } else {
             addressModel[key] = String(addressComponent.longText);
@@ -195,6 +207,6 @@ export class NgxGoogleMapsPlacesApiService {
   private _isAutocompleteSuggestion(
     suggestionOrPrediction: google.maps.places.AutocompleteSuggestion | google.maps.places.PlacePrediction
   ): suggestionOrPrediction is google.maps.places.AutocompleteSuggestion {
-    return suggestionOrPrediction && Object.hasOwn(suggestionOrPrediction, 'placePrediction');
+    return suggestionOrPrediction && 'placePrediction' in suggestionOrPrediction;
   }
 }

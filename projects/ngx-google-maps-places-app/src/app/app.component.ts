@@ -43,8 +43,10 @@ export class AppComponent {
     street: new FormControl<string>('', [ Validators.required ]),
     city: new FormControl<string>('', [ Validators.required ]),
     region: new FormControl<string>('', [ Validators.required ]),
+    regionCode: new FormControl<string>('', [ Validators.required ]),
     country: new FormControl<string>('', [ Validators.required ]),
     countryCode: new FormControl<string>('', [ Validators.required ]),
-    postalCode: new FormControl<string>('', [ Validators.required ])
+    postalCode: new FormControl<string>('', [ Validators.required ]),
+    addressLine2: new FormControl<string>('')
   });
 }

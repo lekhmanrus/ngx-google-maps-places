@@ -2,6 +2,10 @@ const stringifyPackage = require('stringify-package')
 const detectIndent = require('detect-indent')
 const detectNewline = require('detect-newline')
 
+module.exports.readVersion = function(contents) {
+  return JSON.parse(contents).peerDependencies['ngx-google-maps-places-api'];
+};
+
 module.exports.writeVersion = function(contents, version) {
   const json = JSON.parse(contents);
   let indent = detectIndent(contents).indent;

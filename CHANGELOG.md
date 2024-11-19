@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.2.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v18.1.1...v18.2.0) (2024-11-19)
+
+
+### Bug Fixes
+
+* send api on request change ([b96814a](https://github.com/lekhmanrus/ngx-google-maps-places/commit/b96814a1953354fa90fb17f9bc83d8ff41e6e85c))
+* version updater ([859d895](https://github.com/lekhmanrus/ngx-google-maps-places/commit/859d895976be28db0a30c25c93b06441f90010a3))
+
 ### [18.1.1](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v18.1.0...v18.1.1) (2024-10-21)
 
 

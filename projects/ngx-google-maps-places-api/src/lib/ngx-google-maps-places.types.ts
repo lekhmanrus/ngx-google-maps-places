@@ -7,6 +7,4 @@ export type AddressKey = 'streetNumber' | 'postalCode' | 'street' | 'region' | '
  * The keys that can be used in the `AddressModel` type are defined in the `AddressKey` type.
  * @template T The type of the values in the address model.
  */
-export type AddressModel<T = string> = {
-  [key in AddressKey]: T;
-};
+export type AddressModel<T = string> = Record<AddressKey, T>;

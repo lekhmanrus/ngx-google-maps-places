@@ -24,7 +24,7 @@
 [![npm](https://img.shields.io/npm/dm/ngx-google-maps-places-autocomplete.svg)](https://www.npmjs.com/package/ngx-google-maps-places-autocomplete)
 
 
-![Example](https://raw.githubusercontent.com/lekhmanrus/ngx-google-maps-places/main/animation.gif)
+![Example](https://raw.githubusercontent.com/lekhmanrus/ngx-google-maps-places/main/assets/animation.gif)
 
 
 <hr />

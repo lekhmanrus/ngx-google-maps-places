@@ -1,8 +1,8 @@
 import { AfterViewInit, Directive, inject, input, output, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { NgxGoogleMapsPlacesApiService } from 'ngx-google-maps-places-api';
-import { debounceTime, distinctUntilChanged, filter, map, Subject, switchMap, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, merge, switchMap, tap } from 'rxjs';
 
 import {
   NgxGoogleMapsPlacesAutocompletePlaceDetails
@@ -91,17 +91,28 @@ export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
    * A private readonly Subject that emits keyboard events for the input element associated with
    * this directive.
    */
-  private readonly _input$ = new Subject<KeyboardEvent>();
+  private readonly _input$ = signal<KeyboardEvent | null>(null);
 
   constructor() {
-    this._input$
+    merge(
+      toObservable(this._input$)
+        .pipe(
+          debounceTime(this.placesAutocompleteDebounceTime$() ?? 725),
+          distinctUntilChanged()
+        ),
+      toObservable(this.placesAutocompleteRequest$).pipe(map(() => this._input$()))
+    )
       .pipe(
-        debounceTime(this.placesAutocompleteDebounceTime$() ?? 725),
-        distinctUntilChanged(),
+        filter((event) => event !== null),
         tap((event) => this._matAutocompleteTrigger._handleInput(event)),
         map((event) => event.target as HTMLInputElement),
         filter(Boolean),
         map((target) => target.value),
+        tap((value) => {
+          if (!value) {
+            this.options$.set([ ]);
+          }
+        }),
         filter((value) => typeof value === 'string' && Boolean(value)),
         // tap((value) => console.log('valueChanges', value)),
         switchMap((value) => this._ngxGoogleMapsPlacesApiService.fetchSuggestions(
@@ -172,6 +183,6 @@ export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
    * @param event The keyboard event that triggered the input.
    */
   private _handleInput(event: KeyboardEvent): void {
-    this._input$.next(event);
+    this._input$.set(event);
   }
 }

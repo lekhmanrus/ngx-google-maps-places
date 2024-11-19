@@ -10,7 +10,7 @@
     },
     {
       "filename": "./projects/ngx-google-maps-places-autocomplete/package.json",
-      "type": "json"
+      "updater": "./scripts/autocomplete-package-version-updater.js"
     }
   ]
 }

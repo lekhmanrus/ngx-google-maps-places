@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.0.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v18.2.0...v19.0.0) (2024-11-22)
+
+
+### Features
+
+* support angular 19 ([0962cfa](https://github.com/lekhmanrus/ngx-google-maps-places/commit/0962cfa806f3e1c27943085820056cf2c85a4265))
+
 ## [18.2.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v18.1.1...v18.2.0) (2024-11-19)
 
 

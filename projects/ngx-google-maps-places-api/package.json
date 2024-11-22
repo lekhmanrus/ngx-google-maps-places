@@ -1,7 +1,7 @@
 {
   "name": "ngx-google-maps-places-api",
   "description": "Angular library that provides a seamless integration with new Google Maps Places API, offering easy-to-use services for place details retrieval and management in Angular applications.",
-  "version": "18.2.0",
+  "version": "19.0.0",
   "homepage": "https://lekhmanrus.github.io/ngx-google-maps-places/",
   "bugs": {
     "url": "https://github.com/lekhmanrus/ngx-google-maps-places/issues",

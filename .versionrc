@@ -5,6 +5,10 @@
       "type": "json"
     },
     {
+      "filename": "./package-lock.json",
+      "type": "json"
+    },
+    {
       "filename": "./projects/ngx-google-maps-places-api/package.json",
       "type": "json"
     },

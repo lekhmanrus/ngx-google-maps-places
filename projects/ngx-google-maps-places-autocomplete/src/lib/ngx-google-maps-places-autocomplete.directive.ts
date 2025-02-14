@@ -2,7 +2,7 @@ import { AfterViewInit, Directive, inject, input, output, signal } from '@angula
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { NgxGoogleMapsPlacesApiService } from 'ngx-google-maps-places-api';
-import { debounceTime, distinctUntilChanged, filter, map, merge, switchMap, tap } from 'rxjs';
+import { debounce, distinctUntilChanged, filter, map, merge, switchMap, tap, timer } from 'rxjs';
 
 import {
   NgxGoogleMapsPlacesAutocompletePlaceDetails
@@ -97,7 +97,7 @@ export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
     merge(
       toObservable(this._input$)
         .pipe(
-          debounceTime(this.placesAutocompleteDebounceTime$() ?? 725),
+          debounce(() => timer(this.placesAutocompleteDebounceTime$() ?? 725)),
           distinctUntilChanged()
         ),
       toObservable(this.placesAutocompleteRequest$).pipe(map(() => this._input$()))

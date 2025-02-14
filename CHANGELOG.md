@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [19.0.1](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v19.0.0...v19.0.1) (2025-02-14)
+
+
+### Bug Fixes
+
+* **ngx-google-maps-places-autocomplete:** debounce time ([091854d](https://github.com/lekhmanrus/ngx-google-maps-places/commit/091854d0a6d100bceeb0b047fcf74ca5a2bd1316)), closes [#2](https://github.com/lekhmanrus/ngx-google-maps-places/issues/2)
+
 ## [19.0.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v18.2.0...v19.0.0) (2024-11-22)
 
 

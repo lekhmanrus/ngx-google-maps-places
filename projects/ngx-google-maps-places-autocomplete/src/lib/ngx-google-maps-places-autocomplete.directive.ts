@@ -30,8 +30,10 @@ import {
 })
 export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
   /** Determines whether place details should be loaded for the selected autocomplete suggestion. */
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   public readonly shouldLoadPlaceDetails$ = input(true, { alias: 'shouldLoadPlaceDetails' });
   /** List of fields to be fetched at place details request. */
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   public readonly fetchFields$ = input<string[] | undefined>(undefined, { alias: 'fetchFields' });
   /**
    * An input property that specifies the options for the Google Maps Places Autocomplete request.
@@ -42,6 +44,7 @@ export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
    */
   public readonly placesAutocompleteRequest$
     = input<Omit<google.maps.places.AutocompleteRequest, 'input'> | undefined>(undefined, {
+      // eslint-disable-next-line @angular-eslint/no-input-rename
       alias: 'placesAutocompleteRequest'
     });
   /**
@@ -50,12 +53,14 @@ export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
    * debounce time of 725 milliseconds will be used.
    */
   public readonly placesAutocompleteDebounceTime$ = input<number | null>(725, {
+    // eslint-disable-next-line @angular-eslint/no-input-rename
     alias: 'placesAutocompleteDebounceTime'
   });
   /**
    * An event that is emitted when the options for the autocomplete suggestions have been loaded.
    */
   public readonly optionsLoad$
+    // eslint-disable-next-line @angular-eslint/no-output-rename
     = output<NgxGoogleMapsPlacesAutocompleteSuggestion[]>({ alias: 'optionsLoad' });
   /**
    * An event that is emitted when the place details for the selected autocomplete suggestion have
@@ -64,6 +69,7 @@ export class NgxGoogleMapsPlacesAutocompleteDirective implements AfterViewInit {
    * not be loaded.
    */
   public readonly placeDetailsLoad$
+    // eslint-disable-next-line @angular-eslint/no-output-rename
     = output<NgxGoogleMapsPlacesAutocompletePlaceDetails | null>({ alias: 'placeDetailsLoad' });
   /**
    * An observable signal that holds the current list of autocomplete suggestions.

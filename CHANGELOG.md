@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.2.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v20.1.0...v20.2.0) (2025-07-14)
+
+
+### Features
+
+* add cursor rules ([d5734bb](https://github.com/lekhmanrus/ngx-google-maps-places/commit/d5734bb873adfe1bd7d3390abd5b85f798a59c82))
+* set the value programmatically ([d7fdb8e](https://github.com/lekhmanrus/ngx-google-maps-places/commit/d7fdb8e53fcb41875ddc76cf30030ce9d2d6afea)), closes [#4](https://github.com/lekhmanrus/ngx-google-maps-places/issues/4)
+
 ## [20.1.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v20.0.0...v20.1.0) (2025-07-09)
 
 ## [20.0.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v19.0.1...v20.0.0) (2025-07-07)

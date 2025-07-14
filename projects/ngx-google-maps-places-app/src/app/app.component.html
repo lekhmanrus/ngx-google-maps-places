@@ -10,7 +10,7 @@
   <form [formGroup]="addressForm">
     <div class="row">
       <mat-form-field class="full-width">
-        <mat-label>Address</mat-label>
+        <mat-label>Address ({{ addressForm.get('address')?.value }})</mat-label>
         <input type="text"
                placeholder="Pick your address"
                aria-label="Address"
@@ -30,6 +30,10 @@
             </mat-option>
           }
         </mat-autocomplete>
+        <button mat-button type="button" matSuffix
+                (click)="addressForm.get('address')?.setValue('2011 94 St NW, Edmonton, AB T6N 1H1'); $event.stopPropagation()">
+          Set Default Address
+        </button>
       </mat-form-field>
     </div>
 

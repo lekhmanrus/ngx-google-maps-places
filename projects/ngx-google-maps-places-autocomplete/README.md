@@ -209,7 +209,7 @@ Exported as: `ngxGoogleMapsPlacesAutocomplete`
 | Name                                                    | Description                                                          |
 |---------------------------------------------------------|----------------------------------------------------------------------|
 | **Parameters**                                          |                                                                      |
-| `suggestion: NgxGoogleMapsPlacesAutocompleteSuggestion` | The Google Maps Places Autocomplete suggestion to display.           |
+| `suggestion: NgxGoogleMapsPlacesAutocompleteSuggestion \| string` | The Google Maps Places Autocomplete suggestion or a string to display. |
 | **Returns**                                             |                                                                      |
 | `string`                                                | The text of the suggestion, or an empty string if the suggestion is null or does not have a text property. |
 

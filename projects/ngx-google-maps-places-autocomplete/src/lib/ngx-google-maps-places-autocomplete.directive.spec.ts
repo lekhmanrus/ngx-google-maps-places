@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { ElementRef, EventEmitter } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
@@ -21,6 +21,10 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
         NgControl,
         NgxGoogleMapsPlacesAutocompleteDirective,
         {
+          provide: ElementRef,
+          useValue: { nativeElement: document.createElement('input') }
+        },
+        {
           provide: NgxGoogleMapsPlacesApiService,
           useValue: {
             fetchSuggestions: jest.fn().mockReturnValue(of([ ])),
@@ -36,7 +40,8 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
               displayWith: null
             },
             optionSelections: new EventEmitter(),
-            _handleInput: jest.fn()
+            _handleInput: jest.fn(),
+            openPanel: jest.fn()
           }
         }
       ]
@@ -49,17 +54,14 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
     directive['_matAutocompleteTrigger'] = matAutocompleteTrigger;
   });
 
-  it('should set displayWith function if not already set', () => {
-    directive.ngAfterViewInit();
-
+  it('should set displayWith function if not already set', async () => {
+    await flushPromises();
     expect(matAutocompleteTrigger.autocomplete.displayWith).toBe(directive.displayFn);
   });
 
   it('should not set displayWith function if already set', () => {
     const customDisplayFn = () => '';
     matAutocompleteTrigger.autocomplete.displayWith = customDisplayFn;
-
-    directive.ngAfterViewInit();
 
     expect(matAutocompleteTrigger.autocomplete.displayWith).toBe(customDisplayFn);
   });
@@ -70,7 +72,6 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
       .mockReturnValue(of({ } as any));
     const placeDetailsLoadSpy = jest.spyOn(directive.placeDetailsLoad$, 'emit');
 
-    directive.ngAfterViewInit();
     (matAutocompleteTrigger.optionSelections as any)
       .emit({ isUserInput: true, source: { value: { prediction: { } } } });
 
@@ -82,7 +83,6 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
     jest.spyOn(directive, 'shouldLoadPlaceDetails$').mockReturnValue(false);
     const fetchPlaceDetailsSpy = jest.spyOn(ngxGoogleMapsPlacesApiService, 'fetchPlaceDetails');
 
-    directive.ngAfterViewInit();
     (matAutocompleteTrigger.optionSelections as any)
       .emit({ isUserInput: true, source: { value: { prediction: { } } } });
 
@@ -175,6 +175,18 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
     });
   });
 
+  it('should emit placeDetailsLoad$ with correct value', (done) => {
+    const placeDetails = { place: { name: 'Test' }, address: null };
+    jest.spyOn(ngxGoogleMapsPlacesApiService, 'fetchPlaceDetails').mockReturnValue(of(placeDetails.place as any));
+    jest.spyOn(ngxGoogleMapsPlacesApiService, 'parseAddressComponents').mockReturnValue(null);
+    jest.spyOn(directive, 'shouldLoadPlaceDetails$').mockReturnValue(true);
+    directive.placeDetailsLoad$.subscribe((val) => {
+      expect(val).toEqual({ place: placeDetails.place, address: null });
+      done();
+    });
+    (matAutocompleteTrigger.optionSelections as any).emit({ isUserInput: true, source: { value: { prediction: {} } } });
+  });
+
   function createKeyboardEvent(key: string): KeyboardEvent {
     const mockInputElement = document.createElement('input');
     mockInputElement.value = key;
@@ -188,3 +200,7 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
     return inputEvent;
   }
 });
+
+function flushPromises() {
+  return new Promise(resolve => setTimeout(resolve));
+}

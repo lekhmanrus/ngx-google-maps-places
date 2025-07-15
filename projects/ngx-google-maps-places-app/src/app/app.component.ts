@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import {
   FormControl,
@@ -41,9 +41,11 @@ import { NgxGoogleMapsPlacesAutocompleteDirective } from 'ngx-google-maps-places
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+  /** A signal that indicates whether the autocomplete feature is enabled. */
+  public readonly isAutocompleteEnabled = signal(true);
   /** Address reactive form. */
   public readonly addressForm = new FormGroup({
-    address: new FormControl<string>('', [ Validators.required ]),
+    address: new FormControl<string>('419 39 St SW edmonton', [ Validators.required ]),
     streetNumber: new FormControl<string>('', [ Validators.required ]),
     street: new FormControl<string>('', [ Validators.required ]),
     city: new FormControl<string>('', [ Validators.required ]),

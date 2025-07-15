@@ -17,6 +17,7 @@
                matInput
                formControlName="address"
                [matAutocomplete]="addressAutocomplete"
+               [matAutocompleteDisabled]="!isAutocompleteEnabled()"
                ngxGoogleMapsPlacesAutocomplete
                [fetchFields]="[ 'addressComponents', 'location', 'googleMapsURI' ]"
                #placesAutocomplete="ngxGoogleMapsPlacesAutocomplete" />
@@ -30,9 +31,13 @@
             </mat-option>
           }
         </mat-autocomplete>
-        <button mat-button type="button" matSuffix
+        <button matButton type="button" matSuffix
                 (click)="addressForm.get('address')?.setValue('2011 94 St NW, Edmonton, AB T6N 1H1'); $event.stopPropagation()">
           Set Default Address
+        </button>
+        <button [matButton]="isAutocompleteEnabled() ? 'tonal' : 'filled'" type="button" matSuffix
+                (click)="isAutocompleteEnabled.set(!isAutocompleteEnabled()); $event.stopPropagation()">
+          {{ isAutocompleteEnabled() ? 'Disable' : 'Enable' }} Autocomplete
         </button>
       </mat-form-field>
     </div>

@@ -247,6 +247,8 @@ export class NgxGoogleMapsPlacesAutocompleteDirective {
    * @param event The keyboard event that triggered the input.
    */
   private _handleInput(event: KeyboardEvent): void {
-    this._input$.set(event);
+    if (!this._matAutocompleteTrigger.autocompleteDisabled) {
+      this._input$.set(event);
+    }
   }
 }

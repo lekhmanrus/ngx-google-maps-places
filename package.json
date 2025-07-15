@@ -1,7 +1,7 @@
 {
   "name": "ngx-google-maps-places",
   "description": "Wrapper for new Google Maps Places API, making it easier to integrate Google Places functionality into Angular applications.",
-  "version": "20.2.0",
+  "version": "20.3.0",
   "homepage": "https://lekhmanrus.github.io/ngx-google-maps-places/",
   "bugs": {
     "url": "https://github.com/lekhmanrus/ngx-google-maps-places/issues",

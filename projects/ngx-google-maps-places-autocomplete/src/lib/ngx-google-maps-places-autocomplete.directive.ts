@@ -142,12 +142,15 @@ export class NgxGoogleMapsPlacesAutocompleteDirective {
               tap((value) => {
                 const element = this._elementRef.nativeElement;
                 if (element.value !== (value ?? '')) {
-                  element.value = value ?? '';
-                  this._handleInput({
-                    target: element,
-                    type: 'input',
-                    isTrusted: true
-                  } as KeyboardEvent);
+                  // Use queueMicrotask to defer DOM update and prevent NG0100 error
+                  queueMicrotask(() => {
+                    element.value = value ?? '';
+                    this._handleInput({
+                      target: element,
+                      type: 'input',
+                      isTrusted: true
+                    } as KeyboardEvent);
+                  });
                 }
               }),
               takeUntilDestroyed()

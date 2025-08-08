@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.4.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v20.3.0...v20.4.0) (2025-08-08)
+
+
+### Bug Fixes
+
+* **autocomplete:** prevent NG0100 error with Validators.required and initial values ([7b09a40](https://github.com/lekhmanrus/ngx-google-maps-places/commit/7b09a40e0b5a7eb6f8bb47797df85c0c8aab24e5)), closes [#7](https://github.com/lekhmanrus/ngx-google-maps-places/issues/7)
+
 ## [20.3.0](https://github.com/lekhmanrus/ngx-google-maps-places/compare/v20.2.0...v20.3.0) (2025-07-15)
 
 

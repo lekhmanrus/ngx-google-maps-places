@@ -117,12 +117,12 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
     expect(directive.displayFn(undefined as any)).toBe('');
   });
 
-  it('should handle input events with debounce correctly in _handleInput', async () => {
+  it('should handle input events with debounce correctly in $handleInput', async () => {
     const inputEvent = createKeyboardEvent('L');
     const fetchSuggestionsSpy = jest.spyOn(ngxGoogleMapsPlacesApiService, 'fetchSuggestions')
       .mockReturnValue(of([ ]));
 
-    directive['_handleInput'](inputEvent);
+    directive['$handleInput'](inputEvent);
     // tick(725);
 
     setTimeout(() => {
@@ -144,7 +144,7 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
         ])
       );
     const inputEvent = createKeyboardEvent('L');
-    directive['_handleInput'](inputEvent);
+    directive['$handleInput'](inputEvent);
     // tick(725);
 
     setTimeout(() => {
@@ -167,7 +167,7 @@ describe('NgxGoogleMapsPlacesAutocompleteDirective', () => {
       ])
     );
     const inputEvent = createKeyboardEvent('L');
-    directive['_handleInput'](inputEvent);
+    directive['$handleInput'](inputEvent);
     // tick(725);
 
     setTimeout(() => {

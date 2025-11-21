@@ -45,7 +45,7 @@ import {
   `,
   standalone: true,
   host: {
-    '(input)': '_handleInput($event)',
+    '(input)': '$handleInput($event)',
   },
   exportAs: 'ngxGoogleMapsPlacesAutocomplete'
 })
@@ -118,7 +118,7 @@ export class NgxGoogleMapsPlacesAutocompleteDirective {
    * A private readonly Subject that emits keyboard events for the input element associated with
    * this directive.
    */
-  private readonly _input$ = signal<KeyboardEvent | null>(null);
+  private readonly _input$ = signal<Event | null>(null);
   /**
    * Injects the NgControl instance for the current directive, making it optional and
    * self-referential.
@@ -145,11 +145,11 @@ export class NgxGoogleMapsPlacesAutocompleteDirective {
                   // Use queueMicrotask to defer DOM update and prevent NG0100 error
                   queueMicrotask(() => {
                     element.value = value ?? '';
-                    this._handleInput({
+                    this.$handleInput({
                       target: element,
                       type: 'input',
                       isTrusted: true
-                    } as KeyboardEvent);
+                    } as Event);
                   });
                 }
               }),
@@ -249,7 +249,7 @@ export class NgxGoogleMapsPlacesAutocompleteDirective {
    * Handles the input event on the input element.
    * @param event The keyboard event that triggered the input.
    */
-  private _handleInput(event: KeyboardEvent): void {
+  protected $handleInput(event: Event): void {
     if (!this._matAutocompleteTrigger.autocompleteDisabled) {
       this._input$.set(event);
     }
